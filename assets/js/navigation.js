@@ -125,6 +125,7 @@ function goToMoveWithCoach(idx) {
 
 function updateRightPanel(idx) {
   const moveData = state.moves[idx];
+  const prevMoveData = state.moves[idx - 1]; // Grab the previous state to see what we SHOULD have played
   const detail = document.getElementById('move-detail');
 
   if (idx === 0) {
@@ -135,8 +136,12 @@ function updateRightPanel(idx) {
 
   const cls = moveData.classification;
   const clsInfo = cls ? CLASS_INFO[cls] : null;
-  const prevEval = state.moves[idx - 1]?.eval;
+  const prevEval = prevMoveData?.eval;
   const currEval = moveData.eval;
+
+  // The alternative "best move" is what the engine recommended BEFORE we made our current move
+  const suggestedBestMove = prevMoveData ? prevMoveData.bestMove : null;
+  const suggestedEval = (prevMoveData && prevMoveData.engineLines && prevMoveData.engineLines[0]) ? prevMoveData.engineLines[0].displayEval : '';
 
   detail.innerHTML =
     '<div class="move-detail-header">' +
@@ -147,15 +152,18 @@ function updateRightPanel(idx) {
     '<div class="eval-item"><div class="eval-item-label">Before</div><div class="eval-item-value ' + (prevEval > 0 ? 'pos' : prevEval < 0 ? 'neg' : '') + '">' + (prevEval !== null && prevEval !== undefined ? formatEvalDisplay(prevEval) : '\u2014') + '</div></div>' +
     '<div class="eval-item"><div class="eval-item-label">After</div><div class="eval-item-value ' + (currEval > 0 ? 'pos' : currEval < 0 ? 'neg' : '') + '">' + (currEval !== null && currEval !== undefined ? formatEvalDisplay(currEval) : '\u2014') + '</div></div>' +
     '<div class="eval-item"><div class="eval-item-label">CP Loss</div><div class="eval-item-value ' + (moveData.cpLoss > 100 ? 'neg' : moveData.cpLoss > 30 ? '' : 'pos') + '">' + (moveData.cpLoss !== null && moveData.cpLoss !== undefined ? moveData.cpLoss.toFixed(0) : '\u2014') + '</div></div>' +
-    '<div class="eval-item"><div class="eval-item-label">Best Move</div><div class="eval-item-value" style="font-size:12px">' + (moveData.bestMove ? uciToSan(idx - 1, moveData.bestMove) : '\u2014') + '</div></div>' +
+    // Replaced uciToSan with formatUciArrow for a clearer "c2 -> c4" display
+    '<div class="eval-item"><div class="eval-item-label">Best Move</div><div class="eval-item-value" style="font-size:12px">' + (suggestedBestMove ? formatUciArrow(suggestedBestMove) : '\u2014') + '</div></div>' +
     '</div>' +
-    (moveData.bestMove && moveData.classification && ['mistake','blunder','inaccuracy'].includes(moveData.classification) ?
-      '<div class="best-move-note">Engine best: <strong>' + uciToSan(idx - 1, moveData.bestMove) + '</strong>' + (moveData.engineLines[0] ? ' (eval ' + moveData.engineLines[0].displayEval + ')' : '') + '</div>' : '');
+    (suggestedBestMove && moveData.classification && ['mistake','blunder','inaccuracy'].includes(moveData.classification) ?
+      '<div class="best-move-note">Engine best: <strong>' + formatUciArrow(suggestedBestMove) + '</strong>' + (suggestedEval ? ' (eval ' + suggestedEval + ')' : '') + '</div>' : '');
 
   const linesEl = document.getElementById('engine-lines-content');
+  
+  // Use the current index to calculate future engine lines properly
   if (moveData.engineLines && moveData.engineLines.length > 0) {
     linesEl.innerHTML = moveData.engineLines.map(line =>
-      '<div class="engine-line"><div class="engine-line-eval">' + (line.displayEval || '\u2014') + '</div><div class="engine-line-moves">' + formatEngineLineMoves(idx - 1, line.moves) + '</div></div>'
+      '<div class="engine-line"><div class="engine-line-eval">' + (line.displayEval || '\u2014') + '</div><div class="engine-line-moves">' + formatEngineLineMoves(idx, line.moves) + '</div></div>'
     ).join('');
   } else {
     linesEl.innerHTML = '<div style="color:var(--text-2);font-size:11px">Calculating...</div>';
@@ -166,6 +174,15 @@ function formatEvalDisplay(cp) {
   if (Math.abs(cp) >= 9999) return cp > 0 ? 'Mate+' : 'Mate-';
   const v = cp / 100;
   return (v > 0 ? '+' : '') + v.toFixed(2);
+}
+
+// Converts standard "c2c4" format into "c2 → c4"
+function formatUciArrow(uci) {
+  if (!uci || uci.length < 4) return uci || '\u2014';
+  const fromSq = uci.substring(0, 2);
+  const toSq = uci.substring(2, 4);
+  const promo = uci.length > 4 ? '=' + uci[4].toUpperCase() : '';
+  return fromSq + ' &rarr; ' + toSq + promo;
 }
 
 function uciToSan(fenIdx, uci) {
@@ -184,9 +201,19 @@ function formatEngineLineMoves(fenIdx, moves) {
     const sans = [];
     for (let i = 0; i < Math.min(moves.length, 5); i++) {
       const uci = moves[i];
+      const turnStr = chess.turn();
+      
+      // The current full move number is derived from the initial FEN plus the number of half-moves applied so far
+      const currentFullMove = Math.floor((fenIdx + i) / 2) + 1;
+      
       const m = chess.move({ from: uci.substring(0, 2), to: uci.substring(2, 4), promotion: uci[4] || 'q' });
       if (!m) break;
-      if (chess.turn() === 'b' && i === 0) sans.push(Math.ceil((fenIdx + 1) / 2) + '.');
+      
+      if (turnStr === 'w') {
+        sans.push(currentFullMove + '.');
+      } else if (i === 0) {
+        sans.push(currentFullMove + '...');
+      }
       sans.push(m.san);
     }
     return sans.join(' ');

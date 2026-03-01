@@ -221,7 +221,7 @@ textarea:focus { border-color: var(--accent); background: #111418; }
 .summary-section { padding: 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
 .player-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
 .player-piece { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-.player-piece.white { background: #f5f0e8; }
+.player-piece.white { background: #f5f0e8; color: #0d0f12; }
 .player-piece.black { background: #2a2a2a; border: 1px solid var(--border); }
 .player-info { flex: 1; }
 .player-name { font-size: 13px; font-weight: 500; color: var(--text-0); display: inline-block; }
@@ -365,7 +365,7 @@ textarea:focus { border-color: var(--accent); background: #111418; }
 .status-dot.idle { background: var(--text-2); animation: none; }
 .status-dot.done { background: #5cb85c; animation: none; }
 
-.best-move-note { background: var(--bg-3); border-left: 3px solid #5cb85c; padding: 8px 10px; margin-top: 8px; border-radius: 0 6px 6px 0; font-size: 12px; color: var(--text-1); font-family: 'JetBrains Mono', monospace; }
+.best-move-note { background: var(--bg-3); border-left: 3px solid #5cb85c; padding: 8px 10px; margin-top: 8px; border-radius: 0 6px 6px 0; font-size: 12px; color: #c9a84c; font-family: 'JetBrains Mono', monospace; }
 .coach-context-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-family: 'JetBrains Mono', monospace; margin-bottom: 10px; }
 .stream-cursor { display: inline-block; width: 2px; height: 14px; background: var(--accent); margin-left: 2px; vertical-align: middle; animation: blink 0.8s infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
