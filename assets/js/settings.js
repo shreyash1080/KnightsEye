@@ -2,26 +2,24 @@
 
 function checkCoachType() {
   const val = document.getElementById('coach-type-select').value;
-  if (val === 'webllm' && !llmConsented) {
+  const model = document.getElementById('model-select').value;
+  const isCached = localStorage.getItem('ke_downloaded_' + model) === 'true';
+
+  if (val === 'webllm' && !isCached) {
     document.getElementById('settings-modal').classList.remove('open');
     document.getElementById('ai-warning-modal').classList.add('open');
-  } else if (val === 'webllm' && llmConsented) {
+  } else if (val === 'webllm' && isCached) {
     document.getElementById('webllm-settings').style.display = 'block';
-    currentCoachType = 'webllm';
   } else {
     document.getElementById('webllm-settings').style.display = 'none';
-    currentCoachType = 'basic';
   }
 }
 
 function acceptAIWarning() {
-  llmConsented = true;
-  localStorage.setItem('ke_llm_consented', 'true');
   document.getElementById('ai-warning-modal').classList.remove('open');
   document.getElementById('settings-modal').classList.add('open');
   document.getElementById('webllm-settings').style.display = 'block';
   document.getElementById('coach-type-select').value = 'webllm';
-  currentCoachType = 'webllm';
 }
 
 function declineAIWarning() {
@@ -29,7 +27,6 @@ function declineAIWarning() {
   document.getElementById('settings-modal').classList.add('open');
   document.getElementById('coach-type-select').value = 'basic';
   document.getElementById('webllm-settings').style.display = 'none';
-  currentCoachType = 'basic';
 }
 
 function openSettings() {
@@ -52,23 +49,30 @@ function closeSettings() {
 }
 
 function saveSettings() {
+  const selectedType = document.getElementById('coach-type-select').value;
   const model = document.getElementById('model-select').value;
   const prevModel = localStorage.getItem('ke_model');
+  
+  currentCoachType = selectedType;
   localStorage.setItem('ke_coach_type', currentCoachType);
   localStorage.setItem('ke_model', model);
   localStorage.setItem('ke_coach_style', document.getElementById('coach-style').value);
   localStorage.setItem('ke_auto_mode', document.getElementById('auto-coach-mode').value);
   localStorage.setItem('ke_voice_speed', document.getElementById('voice-speed').value);
+  
   voiceEnabled = document.getElementById('cb-voice-coach').checked;
   voiceMovesEnabled = document.getElementById('cb-voice-moves').checked;
   localStorage.setItem('ke_voice_enabled', voiceEnabled);
   localStorage.setItem('ke_voice_moves', voiceMovesEnabled);
+  
   const selIdx = document.getElementById('voice-select').selectedIndex;
   if (selIdx >= 0) localStorage.setItem('ke_voice_idx', selIdx);
+  
   closeSettings();
   updateCoachUI();
-  if (currentCoachType === 'webllm' && (model !== prevModel || !webllmEngine)) {
-    webllmEngine = null;
+  
+  if (currentCoachType === 'webllm' && (model !== prevModel || !window.webllmEngine)) {
+    window.webllmEngine = null;
     if (window.initWebLLMEngine) window.initWebLLMEngine(model, false);
   }
 }

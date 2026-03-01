@@ -66,7 +66,7 @@ async function precomputeAllCoachResponses() {
     }
   }
 
-  if (currentCoachType === 'webllm' && webllmEngine && !isPrecomputingLLM) {
+  if (currentCoachType === 'webllm' && window.webllmEngine && !isPrecomputingLLM) {
     isPrecomputingLLM = true;
     const autoMode = localStorage.getItem('ke_auto_mode') || 'all';
     const trigger = { all: ['brilliant','best','excellent','good','inaccuracy','mistake','blunder','book','forced'], blunders: ['blunder'], mistakes: ['blunder','mistake'], inaccuracies: ['blunder','mistake','inaccuracy'] }[autoMode] || [];
@@ -84,7 +84,7 @@ async function precomputeAllCoachResponses() {
       if (!coachCache[cacheKey]) {
         try {
           const styleP = { friendly: 'You are a warm, encouraging chess coach.', strict: 'You are a direct, no-nonsense Russian Grandmaster chess coach.', socratic: 'You are a Socratic chess coach. Guide the player with questions.' }[localStorage.getItem('ke_coach_style') || 'friendly'];
-          const reply = await webllmEngine.chat.completions.create({
+          const reply = await window.webllmEngine.chat.completions.create({
             messages: [{ role: 'system', content: styleP + ' Under 50 words. No markdown.' }, { role: 'user', content: buildAIPrompt(idx) }],
             temperature: 0.5, max_tokens: 100,
           });
@@ -107,6 +107,9 @@ async function askCoach(forceIdx) {
     return;
   }
 
+  // Double check protection: Just bail out if AI is downloading
+  if (currentCoachType === 'webllm' && !window.webllmEngine) return;
+
   const cacheKey = idx + '_' + currentCoachType;
   if (coachCache[cacheKey]) {
     renderCoachMessage(coachCache[cacheKey].text, idx, coachCache[cacheKey].isAI);
@@ -123,7 +126,7 @@ async function askCoach(forceIdx) {
   const btn = document.getElementById('coach-ask-btn');
   btn.disabled = true;
 
-  if (currentCoachType === 'basic' || !webllmEngine) {
+  if (currentCoachType === 'basic' || !window.webllmEngine) {
     const ruleText = buildRuleBasedCoach(idx);
     coachCache[cacheKey] = { text: ruleText, isAI: false };
     renderCoachMessage(ruleText, idx, false);
@@ -136,7 +139,7 @@ async function askCoach(forceIdx) {
       const streamEl = document.getElementById('coach-stream-text');
       const styleP = { friendly: 'You are a warm, encouraging chess coach.', strict: 'You are a direct, no-nonsense Russian Grandmaster chess coach.', socratic: 'You are a Socratic chess coach. Guide the player with questions.' }[localStorage.getItem('ke_coach_style') || 'friendly'];
 
-      const chunks = await webllmEngine.chat.completions.create({
+      const chunks = await window.webllmEngine.chat.completions.create({
         messages: [{ role: 'system', content: styleP + ' Under 50 words. No markdown.' }, { role: 'user', content: buildAIPrompt(idx) }],
         temperature: 0.5, max_tokens: 100, stream: true,
       });
@@ -156,9 +159,10 @@ async function askCoach(forceIdx) {
         if (voiceEnabled) speak(fullText);
       }
     } catch (e) {
+      console.error("WebLLM Generation Error:", e);
       const ruleText = buildRuleBasedCoach(idx);
       coachCache[cacheKey] = { text: ruleText, isAI: false };
-      renderCoachMessage(ruleText, idx, false);
+      renderCoachMessage("⚠️ AI failed to generate. " + ruleText, idx, false);
       if (voiceEnabled) speak(ruleText);
     }
     btn.disabled = false;
@@ -181,7 +185,7 @@ function renderCoachMessage(text, idx, isAI) {
     '<div style="padding:14px">' +
     '<div class="coach-message">' +
     '<div class="coach-message-header">' +
-    '<div style="width:22px;height:22px;border-radius:50%;background:var(--bg-3);border:1px solid var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:12px">\u265e</div>' +
+    '<div style="width:22px;height:22px;border-radius:50%;background:var(--bg-3);border:1px solid var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:12px"><svg class="robo-icon" viewBox="0 0 24 24" style="color:var(--accent);"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h3a3 3 0 0 1 3 3v2h2v4h-2v2a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-2H2v-4h2V10a3 3 0 0 1 3-3h3V5.73A2 2 0 1 1 12 2zm3 13H9v2h6v-2zm-4-4H9v2h2v-2zm5 0h-2v2h2v-2z"/></svg></div>' +
     '<span>Coach \u2014 Move ' + moveNum + ' ' + colorStr + ' \u00b7 ' + (curr && curr.san || '') + '</span>' +
     '<span style="font-size:9px;color:var(--text-2);margin-left:auto">' + (isAI ? '\ud83e\udd16 AI Coach' : '\u26a1 Stockfish + Rules') + '</span>' +
     '</div>' +

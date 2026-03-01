@@ -56,10 +56,14 @@ async function processGame(pgn) {
 
   detectOpening(history);
 
-  setTimeout(() => { initBoard(); renderBoard(); renderMoveList(); }, 50);
-
-  showLoading("Booting Parallel Engines...", "Waking up to 4 Stockfish cores for maximum speed");
-  await runEngineAnalysis();
+  // SPEED FIX: Load board instantly, drop loading screen, and boot engines quietly!
+  setTimeout(() => { 
+    initBoard(); 
+    renderBoard(); 
+    renderMoveList(); 
+    hideLoading(); // Let the user see the game immediately
+    runEngineAnalysis(); // Boot the 4 cores without freezing the UI
+  }, 50);
 }
 
 function detectOpening(history) {
@@ -94,7 +98,6 @@ function detectOpening(history) {
 
 // ─── EVENT LISTENERS ───
 document.addEventListener('DOMContentLoaded', function() {
-  // Keyboard navigation
   document.addEventListener('keydown', function(e) {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
     if (e.key === 'ArrowRight') { goToMoveWithCoach(state.currentMove + 1); e.preventDefault(); }
@@ -103,7 +106,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (e.key === 'ArrowDown')  { goToMove(state.totalMoves); e.preventDefault(); }
   }, true);
 
-  // Eval chart click
   const canvas = document.getElementById('eval-chart');
   canvas.addEventListener('click', (e) => {
     const rect = canvas.getBoundingClientRect();
@@ -112,23 +114,19 @@ document.addEventListener('DOMContentLoaded', function() {
     drawEvalChart();
   });
 
-  // Settings modal close on backdrop
   document.getElementById('settings-modal').addEventListener('click', (e) => {
     if (e.target === e.currentTarget) closeSettings();
   });
 
-  // Voice speed slider
   document.getElementById('voice-speed').addEventListener('input', function() {
     document.getElementById('speed-display').textContent = parseFloat(this.value).toFixed(1) + '\u00d7';
   });
 
-  // Load voices
   if (window.speechSynthesis) {
     window.speechSynthesis.onvoiceschanged = populateVoices;
     populateVoices();
   }
 
-  // Onboarding
   if (!localStorage.getItem('ke_onboarded')) {
     document.getElementById('onboarding-modal').classList.add('open');
   } else if (currentCoachType === 'webllm' && llmConsented) {
@@ -139,7 +137,6 @@ document.addEventListener('DOMContentLoaded', function() {
   updateCoachUI();
 });
 
-// Resize handler
 window.addEventListener('resize', () => {
   if (document.getElementById('analyzer').classList.contains('visible')) {
     initBoard(); renderBoard(); drawEvalChart();

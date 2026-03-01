@@ -41,11 +41,12 @@ async function initEnginePool() {
 
 async function runEngineAnalysis() {
   if (sfWorkers.length === 0) {
+    // Indicate engine booting gently in the bottom status bar!
+    setStatus('Booting engines...', 'active');
     try {
       await initEnginePool();
     } catch (e) {
       setStatus('Engine load failed', 'idle');
-      hideLoading();
       showErrorModal('Engine Blocked', e.message);
       return;
     }
@@ -53,7 +54,6 @@ async function runEngineAnalysis() {
 
   state.analyzing = true;
   completedEvals = 0;
-  hideLoading();
 
   engineQueue = [];
   for (let i = 0; i < state.moves.length; i++) {

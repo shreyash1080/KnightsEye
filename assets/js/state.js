@@ -22,8 +22,8 @@ let isGenerating = false;
 let precomputeQueue = [];
 let isPrecomputingLLM = false;
 
-// WebLLM
-let webllmEngine = null;
+// WebLLM explicitly attached to window for cross-module access
+window.webllmEngine = null;
 
 const CLASS_INFO = {
   'brilliant':  { color: '#1baca6', label: '!! Brilliant',  bg: 'rgba(27,172,166,0.15)' },

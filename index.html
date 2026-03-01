@@ -4,77 +4,50 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- ─── SEO & META ─── -->
-<title>Knight's Eye · Free Chess Game Analyzer & AI Coach</title>
-<meta name="description" content="Free chess game analyzer with AI coaching, move classification, engine analysis, and accuracy scores. Paste your PGN and get instant Stockfish-powered insights. No subscription needed.">
-<meta name="keywords" content="free chess analyzer, chess game review, chess PGN analyzer, stockfish online, chess coach free, chess analysis tool, move classification, chess accuracy score, AI chess coach, chess engine online">
+<title>Free Chess Game Review & Analysis · Knight's Eye Online</title>
+<meta name="description" content="The best free alternative for chess game review. Get instant Stockfish analysis, move classifications, and AI coaching without a subscription.">
+<meta name="keywords" content="chess analyzer, free chess game review, chess PGN analyzer, stockfish online, chess coach free, chess analysis free, best free chess analyzer, move classification, chess accuracy score">
 <meta name="author" content="Knight's Eye">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://knightseye.netlify.app/">
 
-<!-- ─── OPEN GRAPH ─── -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://knightseye.netlify.app/">
-<meta property="og:title" content="Knight's Eye · Free Chess Game Analyzer & AI Coach">
+<meta property="og:title" content="Free Chess Game Review & Analysis · Knight's Eye Online">
 <meta property="og:description" content="Analyze your chess games for free. Paste PGN, get Stockfish engine analysis, move classifications (blunder/mistake/best), accuracy scores and AI coaching.">
 <meta property="og:image" content="https://knightseye.netlify.app/assets/og-image.png">
 
-<!-- ─── TWITTER CARD ─── -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:url" content="https://knightseye.netlify.app/">
 <meta name="twitter:title" content="Knight's Eye · Free Chess Analyzer">
 <meta name="twitter:description" content="Free chess game analyzer powered by Stockfish. Move classifications, accuracy scores, AI coaching. No sign-up required.">
 
-<!-- ─── STRUCTURED DATA (JSON-LD) ─── -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Knight's Eye Chess Analyzer",
-  "url": "https://knightseye.netlify.app/",
-  "description": "Free chess game analyzer and AI coach. Paste PGN for instant Stockfish engine analysis, move classification, accuracy scores and coaching.",
-  "applicationCategory": "GameApplication",
-  "operatingSystem": "Web Browser",
-  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-  "keywords": "chess analyzer, chess review, free chess engine, stockfish, chess coach, PGN analyzer"
-}
-</script>
-
-<!-- ─── FONTS ─── -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=JetBrains+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
-<!-- ─── STYLES ─── -->
 <link rel="stylesheet" href="css/style.css">
-
-<!-- Stockfish notice for compliance -->
-<!-- Stockfish is used via CDN under the GNU GPLv3 license. See: https://github.com/nmrugg/stockfish.js -->
 </head>
 <body>
 
-<!-- ─── CHESS.JS ─── -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 
-<!-- ─── JS MODULES (load order matters) ─── -->
-<script src="js/state.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/engine.js"></script>
-<script src="js/board.js"></script>
-<script src="js/navigation.js"></script>
-<script src="js/settings.js"></script>
-<script src="js/coach.js"></script>
-<script src="js/app.js"></script>
+<script src="assets/js/state.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/engine.js"></script>
+<script src="assets/js/board.js"></script>
+<script src="assets/js/navigation.js"></script>
+<script src="assets/js/settings.js"></script>
+<script src="assets/js/coach.js"></script>
+<script src="assets/js/app.js"></script>
 
-<!-- ─── LOADING OVERLAY ─── -->
 <div id="loading-overlay">
   <div class="golden-horse">&#9822;</div>
   <div class="loading-msg" id="loading-msg">Fetching game data...</div>
   <div class="loading-sub-msg" id="loading-sub-msg">Connecting to servers</div>
 </div>
 
-<!-- ─── HEADER ─── -->
 <header>
-  <div class="logo-icon">&#9822;</div>
+  <div class="logo-icon" aria-label="Knight's Eye Chess Logo" role="img">&#9822;</div>
   <div>
     <div class="logo-text">Knight's Eye</div>
     <div class="logo-sub">Free Chess Analyzer &middot; AI Coach</div>
@@ -84,35 +57,29 @@
       <span id="ai-status-dot" style="width:6px;height:6px;border-radius:50%;background:#5cb85c;display:inline-block"></span>
       <span id="ai-status-label">AI Ready</span>
     </div>
-    <!-- GitHub link -->
     <a href="https://github.com/shreyash1080/KnightsEye" target="_blank" rel="noopener" title="Open Source on GitHub" class="header-btn" aria-label="View source on GitHub">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844a9.59 9.59 0 012.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
       </svg>
     </a>
-    <!-- Settings -->
     <button onclick="openSettings()" title="AI Coach Settings" class="header-btn" aria-label="Settings">&#9881;</button>
   </div>
 </header>
 
-<!-- ─── LANDING PAGE ─── -->
 <div id="landing-page">
-  <div class="splash-board">&#9823;</div>
+  <div class="hero-bg"></div>
+  <div class="hero-glow"></div>
 
   <div class="splash-content">
-    <div class="splash-title">Master Your Chess Vision</div>
-    <div class="splash-sub">Paste your PGN below for deep, move-by-move Stockfish engine analysis, tactical classifications, and AI coaching &mdash; completely free, no sign-up needed.</div>
+    <h1 class="splash-title">Elevate Your <span class="text-gradient">Chess Vision</span></h1>
+    <h2 class="splash-sub">Get deep Stockfish 16 analysis, tactical classifications, and an interactive AI Coach. Paste your PGN below to begin &mdash; completely free.</h2>
     <div class="feature-list">
       <span class="feature-tag">&#9883; Stockfish Engine</span>
-      <span class="feature-tag">&#129504; AI Coach Mode</span>
+      <span class="feature-tag"><svg class="robo-icon" viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h3a3 3 0 0 1 3 3v2h2v4h-2v2a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-2H2v-4h2V10a3 3 0 0 1 3-3h3V5.73A2 2 0 1 1 12 2zm3 13H9v2h6v-2zm-4-4H9v2h2v-2zm5 0h-2v2h2v-2z"/></svg> AI Coach Mode</span>
       <span class="feature-tag">&#128226; Voice Narration</span>
       <span class="feature-tag">&#127919; Move Classification</span>
       <span class="feature-tag">&#128202; Accuracy Score</span>
       <span class="feature-tag">&#127897; Tactical Arrows</span>
-    </div>
-    <div class="engine-note">
-      Powered by <a href="https://github.com/nmrugg/stockfish.js" target="_blank" rel="noopener">Stockfish.js</a> (GNU GPLv3) &bull;
-      <a href="https://github.com/shreyash1080/KnightsEye" target="_blank" rel="noopener">Open Source on GitHub</a>
     </div>
     <div class="settings-tip">
       <span>&#128161; Click</span><strong>&#9881;</strong><span>top-right to customize your AI Coach</span>
@@ -128,10 +95,12 @@
     </div>
   </div>
 
-  <div class="copyright-footer">&copy; 2026 Knight's Eye &bull; Free forever</div>
+  <div class="copyright-footer">
+    Powered by <a href="https://github.com/nmrugg/stockfish.js" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">Stockfish.js</a> (GNU GPLv3) <br><br>
+    &copy; 2026 Knight's Eye &bull; Free forever
+  </div>
 </div>
 
-<!-- ─── ONBOARDING MODAL ─── -->
 <div class="modal-overlay" id="onboarding-modal">
   <div class="modal" style="text-align:center">
     <div style="font-size:40px;margin-bottom:10px">&#9822;</div>
@@ -139,16 +108,15 @@
     <div class="modal-sub" style="font-size:14px;margin-bottom:20px">
       Choose your AI coach mode:<br><br>
       <strong>&#9889; Basic Mode:</strong> Instant Stockfish-powered coaching. No download.<br><br>
-      <strong>&#129504; AI Coach Mode:</strong> Downloads a real LLM to your browser (~1GB). Only done once.
+      <strong><svg class="robo-icon" viewBox="0 0 24 24" style="color:var(--accent);"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h3a3 3 0 0 1 3 3v2h2v4h-2v2a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-2H2v-4h2V10a3 3 0 0 1 3-3h3V5.73A2 2 0 1 1 12 2zm3 13H9v2h6v-2zm-4-4H9v2h2v-2zm5 0h-2v2h2v-2z"/></svg> AI Coach Mode:</strong> Downloads a real LLM to your browser (~1GB). Only done once.
     </div>
     <div class="modal-actions" style="justify-content:center;gap:15px;flex-wrap:wrap">
       <button class="btn-secondary" onclick="declineOnboardingAI()">&#9889; Basic Mode (Start Now)</button>
-      <button class="btn-primary" onclick="acceptOnboardingAI()">&#129504; Enable AI Coach</button>
+      <button class="btn-primary" onclick="acceptOnboardingAI()"><svg class="robo-icon" viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h3a3 3 0 0 1 3 3v2h2v4h-2v2a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-2H2v-4h2V10a3 3 0 0 1 3-3h3V5.73A2 2 0 1 1 12 2zm3 13H9v2h6v-2zm-4-4H9v2h2v-2zm5 0h-2v2h2v-2z"/></svg> Enable AI Coach</button>
     </div>
   </div>
 </div>
 
-<!-- ─── AI WARNING MODAL (shown before any download) ─── -->
 <div class="modal-overlay" id="ai-warning-modal">
   <div class="modal" style="border:2px solid #e07820;text-align:center">
     <div style="font-size:40px;margin-bottom:10px">&#128266;</div>
@@ -168,7 +136,6 @@
   </div>
 </div>
 
-<!-- ─── SETTINGS MODAL ─── -->
 <div class="modal-overlay" id="settings-modal">
   <div class="modal">
     <div class="modal-title">&#9881; AI Coach Settings</div>
@@ -188,7 +155,7 @@
       </div>
       <div class="modal-field">
         <label>Select AI Model</label>
-        <select id="model-select">
+        <select id="model-select" onchange="checkCoachType()">
           <option value="Llama-3.2-1B-Instruct-q4f32_1-MLC">&#9889; Llama 3.2 1B &mdash; Fastest (~700MB)</option>
           <option value="Qwen2.5-1.5B-Instruct-q4f16_1-MLC" selected>&#9878; Qwen 2.5 1.5B &mdash; Balanced (~1GB)</option>
           <option value="gemma-2-2b-it-q4f16_1-MLC">&#127919; Gemma 2 2B &mdash; Sharp (~1.5GB)</option>
@@ -248,7 +215,6 @@
   </div>
 </div>
 
-<!-- ─── ERROR MODAL ─── -->
 <div class="modal-overlay" id="error-modal">
   <div class="modal" style="border:2px solid #e07820;text-align:center">
     <div style="font-size:40px;margin-bottom:10px;color:#e07820">&#9888;&#65039;</div>
@@ -260,19 +226,23 @@
   </div>
 </div>
 
-<!-- ─── ANALYZER ─── -->
 <div id="analyzer">
   <div class="main-layout">
 
-    <!-- LEFT: Move List -->
     <div class="left-panel">
       <div class="panel-header">
         <span>Game Review</span>
-        <div style="display:flex;gap:6px">
-          <button class="nav-home-btn" style="background:var(--bg-2);border-color:var(--accent-dim);color:var(--accent)" onclick="exportPGN()">&#128203; Export PGN</button>
-          <button class="nav-home-btn" onclick="goHome()">&#8592; Home</button>
+        <div class="header-tools">
+          <button class="tool-btn" onclick="copyFEN()" title="Copy FEN">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </button>
+          <div class="header-divider"></div>
+          <button class="tool-btn danger" onclick="goHome()" title="Close / New Game">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
         </div>
       </div>
+
       <div class="summary-section">
         <div class="player-row">
           <div class="player-piece white">&#9812;</div>
@@ -304,7 +274,6 @@
       </div>
     </div>
 
-    <!-- CENTER: Board -->
     <div class="center-panel">
       <div class="player-label top" id="top-player-label">
         <div class="piece-icon b">&#9823;</div>
@@ -339,11 +308,10 @@
       </div>
     </div>
 
-    <!-- RIGHT: Engine + Coach -->
     <div class="right-panel">
       <div class="panel-tabs">
         <button class="panel-tab active" onclick="switchTab('engine')" id="tab-engine">&#128290; Engine</button>
-        <button class="panel-tab" onclick="switchTab('coach')" id="tab-coach">&#129504; AI Coach</button>
+        <button class="panel-tab" onclick="switchTab('coach')" id="tab-coach"><svg class="robo-icon" viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h3a3 3 0 0 1 3 3v2h2v4h-2v2a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-2H2v-4h2V10a3 3 0 0 1 3-3h3V5.73A2 2 0 1 1 12 2zm3 13H9v2h6v-2zm-4-4H9v2h2v-2zm5 0h-2v2h2v-2z"/></svg> AI Coach</button>
       </div>
 
       <div class="tab-content active" id="tab-content-engine">
@@ -364,7 +332,9 @@
             <span id="ui-coach-type-badge" class="coach-type-badge badge-basic">Basic Mode (Fast)</span>
           </div>
           <div class="coach-toolbar">
-            <button class="coach-btn ask" id="coach-ask-btn" onclick="askCoach()">&#9822; Ask Coach</button>
+            <button class="coach-btn ask" id="coach-ask-btn" onclick="askCoach()">
+              <svg class="robo-icon" viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h3a3 3 0 0 1 3 3v2h2v4h-2v2a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-2H2v-4h2V10a3 3 0 0 1 3-3h3V5.73A2 2 0 1 1 12 2zm3 13H9v2h6v-2zm-4-4H9v2h2v-2zm5 0h-2v2h2v-2z"/></svg> Ask Coach
+            </button>
           </div>
           <div class="coach-toolbar" style="padding-top:4px;padding-bottom:8px;border-top:none">
             <label class="auto-coach-toggle">
@@ -374,7 +344,7 @@
           </div>
           <div class="coach-response" id="coach-response">
             <div class="coach-idle">
-              <div class="coach-avatar">&#9822;</div>
+              <div class="coach-avatar"><svg class="robo-icon" viewBox="0 0 24 24" style="width:28px;height:28px;"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h3a3 3 0 0 1 3 3v2h2v4h-2v2a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-2H2v-4h2V10a3 3 0 0 1 3-3h3V5.73A2 2 0 1 1 12 2zm3 13H9v2h6v-2zm-4-4H9v2h2v-2zm5 0h-2v2h2v-2z"/></svg></div>
               <div class="coach-idle-text" id="coach-idle-msg">Ready to analyze. Navigate to a move and click Ask Coach.</div>
             </div>
           </div>
@@ -397,8 +367,20 @@
   </div>
 </div>
 
-<!-- ─── WEBLLM (ES Module - must be last) ─── -->
-<script type="module" src="js/webllm.js"></script>
+<script>
+  function copyFEN() {
+    const moveData = state.moves[state.currentMove];
+    if (moveData && moveData.fen) {
+      navigator.clipboard.writeText(moveData.fen);
+      setStatus('FEN Copied!', 'done');
+      setTimeout(() => { if (!state.analyzing) setStatus('Ready', 'idle'); }, 2000);
+    } else {
+      showErrorModal("Error", "No valid position found to copy.");
+    }
+  }
+</script>
+
+<script type="module" src="assets/js/webllm.js"></script>
 
 </body>
 </html>
