@@ -152,15 +152,14 @@ function updateRightPanel(idx) {
     '<div class="eval-item"><div class="eval-item-label">Before</div><div class="eval-item-value ' + (prevEval > 0 ? 'pos' : prevEval < 0 ? 'neg' : '') + '">' + (prevEval !== null && prevEval !== undefined ? formatEvalDisplay(prevEval) : '\u2014') + '</div></div>' +
     '<div class="eval-item"><div class="eval-item-label">After</div><div class="eval-item-value ' + (currEval > 0 ? 'pos' : currEval < 0 ? 'neg' : '') + '">' + (currEval !== null && currEval !== undefined ? formatEvalDisplay(currEval) : '\u2014') + '</div></div>' +
     '<div class="eval-item"><div class="eval-item-label">CP Loss</div><div class="eval-item-value ' + (moveData.cpLoss > 100 ? 'neg' : moveData.cpLoss > 30 ? '' : 'pos') + '">' + (moveData.cpLoss !== null && moveData.cpLoss !== undefined ? moveData.cpLoss.toFixed(0) : '\u2014') + '</div></div>' +
-    // Replaced uciToSan with formatUciArrow for a clearer "c2 -> c4" display
     '<div class="eval-item"><div class="eval-item-label">Best Move</div><div class="eval-item-value" style="font-size:12px">' + (suggestedBestMove ? formatUciArrow(suggestedBestMove) : '\u2014') + '</div></div>' +
     '</div>' +
-    (suggestedBestMove && moveData.classification && ['mistake','blunder','inaccuracy'].includes(moveData.classification) ?
+    // FIX: Show the "Engine best" box anytime the move played was NOT "best" or "brilliant"
+    (suggestedBestMove && moveData.classification && !['best','brilliant'].includes(moveData.classification) ?
       '<div class="best-move-note">Engine best: <strong>' + formatUciArrow(suggestedBestMove) + '</strong>' + (suggestedEval ? ' (eval ' + suggestedEval + ')' : '') + '</div>' : '');
 
   const linesEl = document.getElementById('engine-lines-content');
   
-  // Use the current index to calculate future engine lines properly
   if (moveData.engineLines && moveData.engineLines.length > 0) {
     linesEl.innerHTML = moveData.engineLines.map(line =>
       '<div class="engine-line"><div class="engine-line-eval">' + (line.displayEval || '\u2014') + '</div><div class="engine-line-moves">' + formatEngineLineMoves(idx, line.moves) + '</div></div>'
@@ -176,7 +175,6 @@ function formatEvalDisplay(cp) {
   return (v > 0 ? '+' : '') + v.toFixed(2);
 }
 
-// Converts standard "c2c4" format into "c2 → c4"
 function formatUciArrow(uci) {
   if (!uci || uci.length < 4) return uci || '\u2014';
   const fromSq = uci.substring(0, 2);
@@ -202,18 +200,11 @@ function formatEngineLineMoves(fenIdx, moves) {
     for (let i = 0; i < Math.min(moves.length, 5); i++) {
       const uci = moves[i];
       const turnStr = chess.turn();
-      
-      // The current full move number is derived from the initial FEN plus the number of half-moves applied so far
       const currentFullMove = Math.floor((fenIdx + i) / 2) + 1;
-      
       const m = chess.move({ from: uci.substring(0, 2), to: uci.substring(2, 4), promotion: uci[4] || 'q' });
       if (!m) break;
-      
-      if (turnStr === 'w') {
-        sans.push(currentFullMove + '.');
-      } else if (i === 0) {
-        sans.push(currentFullMove + '...');
-      }
+      if (turnStr === 'w') { sans.push(currentFullMove + '.'); } 
+      else if (i === 0) { sans.push(currentFullMove + '...'); }
       sans.push(m.san);
     }
     return sans.join(' ');
