@@ -61,8 +61,8 @@ async function processGame(pgn) {
     initBoard(); 
     renderBoard(); 
     renderMoveList(); 
-    hideLoading(); // Let the user see the game immediately
-    runEngineAnalysis(); // Boot the 4 cores without freezing the UI
+    hideLoading(); 
+    runEngineAnalysis(); 
   }, 50);
 }
 
@@ -96,7 +96,6 @@ function detectOpening(history) {
   document.getElementById('opening-name').textContent = state.headers.ECO || 'Unknown Opening';
 }
 
-// ─── EVENT LISTENERS ───
 document.addEventListener('DOMContentLoaded', function() {
   document.addEventListener('keydown', function(e) {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
@@ -130,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (!localStorage.getItem('ke_onboarded')) {
     document.getElementById('onboarding-modal').classList.add('open');
   } else if (currentCoachType === 'webllm' && llmConsented) {
-    const savedModel = localStorage.getItem('ke_model') || 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC';
+    const savedModel = localStorage.getItem('ke_model') || window.defaultLLMModel;
     if (window.initWebLLMEngine) window.initWebLLMEngine(savedModel, true);
   }
 

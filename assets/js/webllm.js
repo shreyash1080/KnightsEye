@@ -9,7 +9,6 @@ async function requestPersistentStorage() {
   }
 }
 
-// Global hook to track progress explicitly
 window.llmLoadProgress = "0%";
 
 window.initWebLLMEngine = async function(selectedModel, isAutoLoad = false) {
@@ -39,18 +38,14 @@ window.initWebLLMEngine = async function(selectedModel, isAutoLoad = false) {
     }
 
     const initProgressCallback = (report) => {
-      // Create percentage
       const pct = Math.round(report.progress * 100) + "%";
       window.llmLoadProgress = pct;
 
-      // Update loading overlay if it happens to be showing
       const msgLabel = document.getElementById('loading-sub-msg');
       if(msgLabel) msgLabel.textContent = report.text;
 
-      // Real-time update inside the actual Coach panel!
       const coachResp = document.getElementById('coach-response');
       if (coachResp && (!window.webllmEngine)) {
-         // Prevent overriding active coach messages
          if (!coachResp.querySelector('.coach-message')) {
              coachResp.innerHTML = `
                <div style="padding:20px;text-align:center;color:var(--text-1);font-size:12px;height:100%;display:flex;flex-direction:column;justify-content:center;">
@@ -69,13 +64,9 @@ window.initWebLLMEngine = async function(selectedModel, isAutoLoad = false) {
     engine.setInitProgressCallback(initProgressCallback);
     await engine.reload(selectedModel);
 
-    // Assign to global
     window.webllmEngine = engine;
-
     localStorage.setItem('ke_downloaded_' + selectedModel, 'true');
     hideLoading();
-    
-    // Unlock the Ask Coach button now that it's finished loading!
     updateCoachUI();
 
     const ind = document.getElementById('ai-status-indicator');
@@ -86,15 +77,16 @@ window.initWebLLMEngine = async function(selectedModel, isAutoLoad = false) {
     if (state.totalMoves > 0 && !state.analyzing) precomputeAllCoachResponses();
 
   } catch (err) {
-    console.error(err);
+    console.error("WebLLM Crash:", err);
     hideLoading();
     if (!isAutoLoad) {
-      let extraNote = "";
-      if (window.location.protocol === 'file:') {
-        extraNote = "<br><br><b>Notice:</b> You are running from a local file. AI capabilities require a secure server context. Please use VS Code Live Server.";
-      }
-      showErrorModal("AI Engine Failed", "Your browser may not support WebGPU, or the download failed.<br><br>" + err.message + extraNote);
+      const errText = err.message || String(err);
+      let extraNote = window.isMobile 
+        ? "<br><br><b>💡 Tip:</b> Your phone's GPU crashed. Ensure you select the <b>Ultra Light (0.5B)</b> model in Settings."
+        : "<br><br><b>Notice:</b> GPU Out of Memory or browser block (ensure you use a Local Server like Live Server, not a file:/// URL).";
+      showErrorModal("AI Engine Crashed", "WebGPU failed to load the model.<br><br><span style='font-size:11px;color:var(--text-2)'>" + errText + "</span>" + extraNote);
     }
+    // Safely fall back to Basic Mode to prevent app lock
     currentCoachType = 'basic';
     localStorage.setItem('ke_coach_type', 'basic');
     updateCoachUI();

@@ -1,4 +1,9 @@
-// ─── GLOBAL STATE ───
+// ─── GLOBAL STATE & MOBILE DETECTION ───
+
+// Detect if user is on mobile to suggest the lightest model globally
+window.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+window.defaultLLMModel = window.isMobile ? 'Qwen2.5-0.5B-Instruct-q4f16_1-MLC' : 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC';
+
 const state = {
   moves: [],
   currentMove: 0,
@@ -10,19 +15,16 @@ const state = {
   evalHistory: [],
 };
 
-// Settings state
 let currentCoachType = localStorage.getItem('ke_coach_type') || 'basic';
 let llmConsented = localStorage.getItem('ke_llm_consented') === 'true';
 let voiceEnabled = localStorage.getItem('ke_voice_enabled') === 'true';
 let voiceMovesEnabled = localStorage.getItem('ke_voice_moves') === 'true';
 
-// Coach cache & pre-compute
 let coachCache = {};
 let isGenerating = false;
 let precomputeQueue = [];
 let isPrecomputingLLM = false;
 
-// WebLLM explicitly attached to window for cross-module access
 window.webllmEngine = null;
 
 const CLASS_INFO = {

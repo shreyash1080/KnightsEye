@@ -39,6 +39,9 @@ function buildRuleBasedCoach(idx) {
   const isCastle = curr.san && curr.san.startsWith('O');
   const isCheck = curr.san && curr.san.includes('+');
   const opening = document.getElementById('opening-name').textContent || '';
+  
+  // FIX: Prevent "gxf5+ is better than gxf5+" duplicate bug
+  const isSameMove = bestSan && (bestSan === curr.san);
 
   if (idx <= 12 && ['best','excellent','good','book'].includes(cls)) {
     return getRandomPhrase(["Textbook development.","Standard theory.","Following main ideas here.","Solid opening play."]) + ' ' + curr.san + ' fits well into the ' + opening + ' concepts. Focus on controlling the center, developing pieces, and king safety.';
@@ -46,8 +49,10 @@ function buildRuleBasedCoach(idx) {
     const ctx = isCastle ? "Securing the king was top priority." : isCapture ? "Trading or winning material here is exactly right." : isCheck ? "Forcing the king to move disrupts their coordination." : "Developing the " + pieceName + " here creates excellent pressure.";
     return getRandomPhrase(["Textbook. Playing " + curr.san + " is the engine's top choice.","Absolutely nailed it! " + curr.san + " is the best move here.","Perfect decision \u2014 " + curr.san + " is what Stockfish recommends."]) + ' ' + ctx + ' Keep up this precision!';
   } else if (cls === 'excellent') {
+    if (isSameMove) return getRandomPhrase(["Really nice practical move!","Strong, ambitious play!","Love the confidence here."]) + ' ' + curr.san + ' is a great choice that creates tough problems for your opponent.';
     return getRandomPhrase(["Really nice practical move!","Strong, ambitious play!","Love the confidence here."]) + ' ' + curr.san + ' might not be the absolute top computer line (Stockfish prefers ' + bestSan + '), but in a real game this creates tough problems for your opponent.';
   } else if (cls === 'good') {
+    if (isSameMove) return getRandomPhrase(["Solid, nothing wrong here.","Keeping the tension alive.","Safe, structural choice."]) + ' ' + curr.san + ' is completely fine and very solid.';
     return getRandomPhrase(["Solid, nothing wrong here.","Keeping the tension alive.","Safe, structural choice."]) + ' ' + curr.san + ' is completely fine. For a tiny extra edge, consider ' + bestSan + ' next time, but what you played is very solid.';
   } else if (cls === 'inaccuracy') {
     return getRandomPhrase(["Slight slip here.","You let the advantage slip a bit.","A touch too passive."]) + ' ' + curr.san + ' drops ~' + cpLoss + ' centipawns. Playing ' + bestSan + ' instead would have seized the initiative faster. Keep your pieces active!';
@@ -107,7 +112,6 @@ async function askCoach(forceIdx) {
     return;
   }
 
-  // Double check protection: Just bail out if AI is downloading
   if (currentCoachType === 'webllm' && !window.webllmEngine) return;
 
   const cacheKey = idx + '_' + currentCoachType;
@@ -179,7 +183,9 @@ function renderCoachMessage(text, idx, isAI) {
   const cpLoss = curr && curr.cpLoss;
   const prev = state.moves[idx - 1];
   const bestSan = prev && prev.bestMove ? uciToSan(idx - 1, prev.bestMove) : null;
-  const showArrow = bestSan && !['best','excellent','brilliant'].includes(cls);
+  
+  // FIX: Hide the "Better move" UI box if the best move is ACTUALLY the move that was played!
+  const showArrow = bestSan && bestSan !== curr.san && !['best','excellent','brilliant'].includes(cls);
 
   document.getElementById('coach-response').innerHTML =
     '<div style="padding:14px">' +

@@ -33,9 +33,12 @@ function openSettings() {
   document.getElementById('settings-modal').classList.add('open');
   document.getElementById('coach-type-select').value = currentCoachType;
   document.getElementById('webllm-settings').style.display = currentCoachType === 'webllm' ? 'block' : 'none';
-  document.getElementById('model-select').value = localStorage.getItem('ke_model') || 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC';
+  
+  // Apply smart defaults based on the device detected in state.js
+  document.getElementById('model-select').value = localStorage.getItem('ke_model') || window.defaultLLMModel;
   document.getElementById('coach-style').value = localStorage.getItem('ke_coach_style') || 'friendly';
   document.getElementById('auto-coach-mode').value = localStorage.getItem('ke_auto_mode') || 'all';
+  
   const savedSpeed = localStorage.getItem('ke_voice_speed') || '1.0';
   document.getElementById('voice-speed').value = savedSpeed;
   document.getElementById('speed-display').textContent = parseFloat(savedSpeed).toFixed(1) + '\u00d7';

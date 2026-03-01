@@ -41,12 +41,12 @@ async function initEnginePool() {
 
 async function runEngineAnalysis() {
   if (sfWorkers.length === 0) {
-    // Indicate engine booting gently in the bottom status bar!
     setStatus('Booting engines...', 'active');
     try {
       await initEnginePool();
     } catch (e) {
       setStatus('Engine load failed', 'idle');
+      hideLoading();
       showErrorModal('Engine Blocked', e.message);
       return;
     }
@@ -87,14 +87,22 @@ function processEngineQueue() {
       moveData.engineLines = result.lines;
       state.evalHistory[idx] = result.eval;
 
-      if (idx > 0) classifyMove(idx);
+      // RACE CONDITION FIX: Sweep back and update missing move classifications
+      for (let i = 1; i <= state.totalMoves; i++) {
+        if (!state.moves[i].classification && state.moves[i - 1].eval !== null && state.moves[i].eval !== null) {
+          classifyMove(i);
+          updateMoveClassification(i);
+          if (i === state.currentMove) {
+            updateRightPanel(i);
+          }
+        }
+      }
 
       completedEvals++;
       const pct = Math.round((completedEvals / state.moves.length) * 100);
       document.getElementById('progress-fill').style.width = pct + '%';
 
       if (idx === state.currentMove) updateRightPanel(idx);
-      updateMoveClassification(idx);
       updateAccuracyScores();
       drawEvalChart();
 
