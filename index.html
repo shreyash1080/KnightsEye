@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ─── SEO & META ─── -->
+<title>Knight's Eye · Free Chess Game Analyzer & AI Coach</title>
+<meta name="description" content="Free chess game analyzer with AI coaching, move classification, engine analysis, and accuracy scores. Paste your PGN and get instant Stockfish-powered insights. No subscription needed.">
+<meta name="keywords" content="free chess analyzer, chess game review, chess PGN analyzer, stockfish online, chess coach free, chess analysis tool, move classification, chess accuracy score, AI chess coach, chess engine online">
+<meta name="author" content="Knight's Eye">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://knightseye.netlify.app/">
+
+<!-- ─── OPEN GRAPH ─── -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://knightseye.netlify.app/">
+<meta property="og:title" content="Knight's Eye · Free Chess Game Analyzer & AI Coach">
+<meta property="og:description" content="Analyze your chess games for free. Paste PGN, get Stockfish engine analysis, move classifications (blunder/mistake/best), accuracy scores and AI coaching.">
+<meta property="og:image" content="https://knightseye.netlify.app/assets/og-image.png">
+
+<!-- ─── TWITTER CARD ─── -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="https://knightseye.netlify.app/">
+<meta name="twitter:title" content="Knight's Eye · Free Chess Analyzer">
+<meta name="twitter:description" content="Free chess game analyzer powered by Stockfish. Move classifications, accuracy scores, AI coaching. No sign-up required.">
+
+<!-- ─── STRUCTURED DATA (JSON-LD) ─── -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Knight's Eye Chess Analyzer",
+  "url": "https://knightseye.netlify.app/",
+  "description": "Free chess game analyzer and AI coach. Paste PGN for instant Stockfish engine analysis, move classification, accuracy scores and coaching.",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Web Browser",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "keywords": "chess analyzer, chess review, free chess engine, stockfish, chess coach, PGN analyzer"
+}
+</script>
+
+<!-- ─── FONTS ─── -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=JetBrains+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<!-- ─── STYLES ─── -->
+<link rel="stylesheet" href="css/style.css">
+
+<!-- Stockfish notice for compliance -->
+<!-- Stockfish is used via CDN under the GNU GPLv3 license. See: https://github.com/nmrugg/stockfish.js -->
+</head>
+<body>
+
+<!-- ─── CHESS.JS ─── -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+
+<!-- ─── JS MODULES (load order matters) ─── -->
+<script src="js/state.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/board.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/coach.js"></script>
+<script src="js/app.js"></script>
+
+<!-- ─── LOADING OVERLAY ─── -->
+<div id="loading-overlay">
+  <div class="golden-horse">&#9822;</div>
+  <div class="loading-msg" id="loading-msg">Fetching game data...</div>
+  <div class="loading-sub-msg" id="loading-sub-msg">Connecting to servers</div>
+</div>
+
+<!-- ─── HEADER ─── -->
+<header>
+  <div class="logo-icon">&#9822;</div>
+  <div>
+    <div class="logo-text">Knight's Eye</div>
+    <div class="logo-sub">Free Chess Analyzer &middot; AI Coach</div>
+  </div>
+  <div class="header-actions">
+    <div id="ai-status-indicator" style="display:none;align-items:center;gap:6px;font-size:11px;color:var(--text-2);font-family:'JetBrains Mono',monospace">
+      <span id="ai-status-dot" style="width:6px;height:6px;border-radius:50%;background:#5cb85c;display:inline-block"></span>
+      <span id="ai-status-label">AI Ready</span>
+    </div>
+    <!-- GitHub link -->
+    <a href="https://github.com/shreyash1080/KnightsEye" target="_blank" rel="noopener" title="Open Source on GitHub" class="header-btn" aria-label="View source on GitHub">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844a9.59 9.59 0 012.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+      </svg>
+    </a>
+    <!-- Settings -->
+    <button onclick="openSettings()" title="AI Coach Settings" class="header-btn" aria-label="Settings">&#9881;</button>
+  </div>
+</header>
+
+<!-- ─── LANDING PAGE ─── -->
+<div id="landing-page">
+  <div class="splash-board">&#9823;</div>
+
+  <div class="splash-content">
+    <div class="splash-title">Master Your Chess Vision</div>
+    <div class="splash-sub">Paste your PGN below for deep, move-by-move Stockfish engine analysis, tactical classifications, and AI coaching &mdash; completely free, no sign-up needed.</div>
+    <div class="feature-list">
+      <span class="feature-tag">&#9883; Stockfish Engine</span>
+      <span class="feature-tag">&#129504; AI Coach Mode</span>
+      <span class="feature-tag">&#128226; Voice Narration</span>
+      <span class="feature-tag">&#127919; Move Classification</span>
+      <span class="feature-tag">&#128202; Accuracy Score</span>
+      <span class="feature-tag">&#127897; Tactical Arrows</span>
+    </div>
+    <div class="engine-note">
+      Powered by <a href="https://github.com/nmrugg/stockfish.js" target="_blank" rel="noopener">Stockfish.js</a> (GNU GPLv3) &bull;
+      <a href="https://github.com/shreyash1080/KnightsEye" target="_blank" rel="noopener">Open Source on GitHub</a>
+    </div>
+    <div class="settings-tip">
+      <span>&#128161; Click</span><strong>&#9881;</strong><span>top-right to customize your AI Coach</span>
+    </div>
+  </div>
+
+  <div class="input-panel">
+    <label class="input-section-label">Paste Raw PGN Text</label>
+    <textarea id="pgn-input" placeholder='[Event "Live Chess"]&#10;[White "Player1"]&#10;...&#10;1. e4 e5 2. Nf3 ...' aria-label="PGN input"></textarea>
+    <div class="action-buttons">
+      <button class="btn-primary" style="flex:2" onclick="analyzeFromPGN()">&#128202; Analyze Game</button>
+      <button class="btn-secondary" style="flex:1" onclick="loadDemo()">Try Example</button>
+    </div>
+  </div>
+
+  <div class="copyright-footer">&copy; 2026 Knight's Eye &bull; Free forever</div>
+</div>
+
+<!-- ─── ONBOARDING MODAL ─── -->
+<div class="modal-overlay" id="onboarding-modal">
+  <div class="modal" style="text-align:center">
+    <div style="font-size:40px;margin-bottom:10px">&#9822;</div>
+    <div class="modal-title">Welcome to Knight's Eye!</div>
+    <div class="modal-sub" style="font-size:14px;margin-bottom:20px">
+      Choose your AI coach mode:<br><br>
+      <strong>&#9889; Basic Mode:</strong> Instant Stockfish-powered coaching. No download.<br><br>
+      <strong>&#129504; AI Coach Mode:</strong> Downloads a real LLM to your browser (~1GB). Only done once.
+    </div>
+    <div class="modal-actions" style="justify-content:center;gap:15px;flex-wrap:wrap">
+      <button class="btn-secondary" onclick="declineOnboardingAI()">&#9889; Basic Mode (Start Now)</button>
+      <button class="btn-primary" onclick="acceptOnboardingAI()">&#129504; Enable AI Coach</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── AI WARNING MODAL (shown before any download) ─── -->
+<div class="modal-overlay" id="ai-warning-modal">
+  <div class="modal" style="border:2px solid #e07820;text-align:center">
+    <div style="font-size:40px;margin-bottom:10px">&#128266;</div>
+    <div class="modal-title">⚠️ Data Usage Warning</div>
+    <div class="warning-box">
+      <strong>Before you proceed, please read carefully:</strong><br><br>
+      Enabling AI Coach Mode will <strong>download approximately 1 GB</strong> of neural network data to your browser's local cache.<br><br>
+      &#128250; <strong>Mobile/metered connections:</strong> This WILL use significant mobile data. Only proceed on Wi-Fi.<br><br>
+      &#128190; <strong>Disk space:</strong> Requires ~1-2.5GB free depending on model choice.<br><br>
+      &#9989; <strong>One-time only:</strong> After the first download, it loads instantly from your device with zero data use.<br><br>
+      If you're unsure or on limited data, choose <strong>Basic Mode</strong> &mdash; it uses Stockfish analysis and is completely free with no downloads.
+    </div>
+    <div class="modal-actions" style="justify-content:center;gap:15px;flex-wrap:wrap">
+      <button class="btn-secondary" onclick="declineAIWarning()">&#9889; No, Use Basic Mode</button>
+      <button class="btn-primary" style="background:#e07820" onclick="acceptAIWarning()">&#9989; I Understand, Download AI</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SETTINGS MODAL ─── -->
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal">
+    <div class="modal-title">&#9881; AI Coach Settings</div>
+    <div class="modal-sub">Customize how your chess coach talks to you.</div>
+
+    <div class="modal-field">
+      <label>Coach Engine Type</label>
+      <select id="coach-type-select" onchange="checkCoachType()">
+        <option value="basic" selected>&#9889; Basic Mode (Instant, Stockfish-powered, No Download)</option>
+        <option value="webllm">&#129504; AI Coach Mode (~1GB local download &mdash; read warning first)</option>
+      </select>
+    </div>
+
+    <div id="webllm-settings" style="display:none">
+      <div class="modal-note" style="background:rgba(27,172,166,0.1);border-color:rgba(27,172,166,0.3)">
+        <strong>Powered by WebLLM</strong> &mdash; runs locally via WebGPU. Downloads once to browser cache; loads instantly every visit after that.
+      </div>
+      <div class="modal-field">
+        <label>Select AI Model</label>
+        <select id="model-select">
+          <option value="Llama-3.2-1B-Instruct-q4f32_1-MLC">&#9889; Llama 3.2 1B &mdash; Fastest (~700MB)</option>
+          <option value="Qwen2.5-1.5B-Instruct-q4f16_1-MLC" selected>&#9878; Qwen 2.5 1.5B &mdash; Balanced (~1GB)</option>
+          <option value="gemma-2-2b-it-q4f16_1-MLC">&#127919; Gemma 2 2B &mdash; Sharp (~1.5GB)</option>
+          <option value="Phi-3.5-mini-instruct-q4f16_1-MLC">&#129504; Phi 3.5 Mini &mdash; Best quality (~2.4GB)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="modal-field">
+      <label>Coach Personality</label>
+      <select id="coach-style">
+        <option value="friendly">Friendly Mentor &mdash; encouraging, explains concepts</option>
+        <option value="strict">Grandmaster Mode &mdash; direct, no sugar-coating</option>
+        <option value="socratic">Socratic Coach &mdash; asks questions, guides thinking</option>
+      </select>
+    </div>
+
+    <div class="modal-field">
+      <label>Auto-Coach Trigger</label>
+      <select id="auto-coach-mode">
+        <option value="all">All Moves</option>
+        <option value="blunders">Blunders only (??)</option>
+        <option value="mistakes">Mistakes &amp; Blunders</option>
+        <option value="inaccuracies">Inaccuracies &amp; above</option>
+      </select>
+    </div>
+
+    <div class="modal-field">
+      <label>Voice Features</label>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+        <label style="text-transform:none;letter-spacing:normal;display:flex;align-items:center;gap:6px">
+          <input type="checkbox" id="cb-voice-coach"> Read Coach Advice Aloud
+        </label>
+        <label style="text-transform:none;letter-spacing:normal;display:flex;align-items:center;gap:6px">
+          <input type="checkbox" id="cb-voice-moves"> Announce Every Move (e.g. "White Nf3")
+        </label>
+      </div>
+    </div>
+
+    <div class="modal-field">
+      <label>Voice Provider</label>
+      <select id="voice-select"></select>
+    </div>
+
+    <div class="modal-field">
+      <label>Speech Speed</label>
+      <input type="range" id="voice-speed" min="0.6" max="1.8" step="0.1" value="1.0" style="width:100%;accent-color:var(--accent);cursor:pointer">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-2);margin-top:2px">
+        <span>Slow</span><span id="speed-display">1.0&times;</span><span>Fast</span>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeSettings()">Cancel</button>
+      <button class="btn-primary" onclick="saveSettings()">Save &amp; Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── ERROR MODAL ─── -->
+<div class="modal-overlay" id="error-modal">
+  <div class="modal" style="border:2px solid #e07820;text-align:center">
+    <div style="font-size:40px;margin-bottom:10px;color:#e07820">&#9888;&#65039;</div>
+    <div class="modal-title" id="generic-error-title">Error</div>
+    <div class="modal-sub" id="generic-error-msg" style="font-size:14px;margin-bottom:25px">Something went wrong.</div>
+    <div class="modal-actions" style="justify-content:center">
+      <button class="btn-primary" style="background:#e07820" onclick="closeErrorModal()">Got it</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── ANALYZER ─── -->
+<div id="analyzer">
+  <div class="main-layout">
+
+    <!-- LEFT: Move List -->
+    <div class="left-panel">
+      <div class="panel-header">
+        <span>Game Review</span>
+        <div style="display:flex;gap:6px">
+          <button class="nav-home-btn" style="background:var(--bg-2);border-color:var(--accent-dim);color:var(--accent)" onclick="exportPGN()">&#128203; Export PGN</button>
+          <button class="nav-home-btn" onclick="goHome()">&#8592; Home</button>
+        </div>
+      </div>
+      <div class="summary-section">
+        <div class="player-row">
+          <div class="player-piece white">&#9812;</div>
+          <div class="player-info">
+            <div class="player-name" id="white-name">White</div>
+            <span id="white-material" class="material-diff"></span>
+            <div class="player-rating" id="white-rating"></div>
+          </div>
+          <div class="accuracy-badge" id="white-accuracy">&mdash;</div>
+        </div>
+        <div class="player-row">
+          <div class="player-piece black">&#9818;</div>
+          <div class="player-info">
+            <div class="player-name" id="black-name">Black</div>
+            <span id="black-material" class="material-diff"></span>
+            <div class="player-rating" id="black-rating"></div>
+          </div>
+          <div class="accuracy-badge" id="black-accuracy">&mdash;</div>
+        </div>
+        <div class="opening-tag">
+          <span>Opening</span>
+          <span id="opening-name">&mdash;</span>
+        </div>
+      </div>
+      <div class="class-summary" id="class-summary" style="display:none"></div>
+      <div class="move-list-wrapper">
+        <div class="panel-header" style="border-top:1px solid var(--border);border-bottom:none;padding-bottom:8px">Moves</div>
+        <div class="move-list" id="move-list"></div>
+      </div>
+    </div>
+
+    <!-- CENTER: Board -->
+    <div class="center-panel">
+      <div class="player-label top" id="top-player-label">
+        <div class="piece-icon b">&#9823;</div>
+        <span id="top-player-name">Black</span>
+      </div>
+      <div class="board-wrapper">
+        <div class="eval-bar-wrapper">
+          <span class="eval-score" id="eval-text-top"></span>
+          <div class="eval-bar" id="eval-bar">
+            <div class="eval-bar-inner" id="eval-fill" style="height:50%"></div>
+          </div>
+          <span class="eval-score" id="eval-text-bot">0.0</span>
+        </div>
+        <div id="board-container">
+          <div id="chess-board"></div>
+          <svg id="arrow-overlay"></svg>
+        </div>
+      </div>
+      <div class="player-label bottom" id="bottom-player-label">
+        <div class="piece-icon w">&#9817;</div>
+        <span id="bottom-player-name">White</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px;padding-top:5px">
+        <div class="nav-controls">
+          <button class="nav-btn" onclick="goToMove(0)" title="Start">&#9198;</button>
+          <button class="nav-btn" onclick="prevMove()" title="Previous">&#9664;</button>
+          <span class="nav-move-indicator" id="nav-indicator">Start</span>
+          <button class="nav-btn" onclick="nextMove()" title="Next">&#9654;</button>
+          <button class="nav-btn" onclick="goToMove(state.totalMoves)" title="End">&#9197;</button>
+        </div>
+        <button class="flip-btn" onclick="flipBoard()">&#8645; Flip</button>
+      </div>
+    </div>
+
+    <!-- RIGHT: Engine + Coach -->
+    <div class="right-panel">
+      <div class="panel-tabs">
+        <button class="panel-tab active" onclick="switchTab('engine')" id="tab-engine">&#128290; Engine</button>
+        <button class="panel-tab" onclick="switchTab('coach')" id="tab-coach">&#129504; AI Coach</button>
+      </div>
+
+      <div class="tab-content active" id="tab-content-engine">
+        <div class="panel-header" style="border-top:none">Position Analysis</div>
+        <div class="move-detail" id="move-detail">
+          <div style="color:var(--text-2);font-size:12px;text-align:center;padding:20px 0">Navigate moves to see analysis</div>
+        </div>
+        <div class="engine-lines" id="engine-lines">
+          <div class="engine-line-header">Engine Lines</div>
+          <div id="engine-lines-content"></div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-content-coach">
+        <div class="coach-panel">
+          <div class="coach-type-banner">
+            <span>Current Engine:</span>
+            <span id="ui-coach-type-badge" class="coach-type-badge badge-basic">Basic Mode (Fast)</span>
+          </div>
+          <div class="coach-toolbar">
+            <button class="coach-btn ask" id="coach-ask-btn" onclick="askCoach()">&#9822; Ask Coach</button>
+          </div>
+          <div class="coach-toolbar" style="padding-top:4px;padding-bottom:8px;border-top:none">
+            <label class="auto-coach-toggle">
+              <input type="checkbox" id="auto-coach-cb" onchange="updateAutoCoach()">
+              Auto-coach on navigate
+            </label>
+          </div>
+          <div class="coach-response" id="coach-response">
+            <div class="coach-idle">
+              <div class="coach-avatar">&#9822;</div>
+              <div class="coach-idle-text" id="coach-idle-msg">Ready to analyze. Navigate to a move and click Ask Coach.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="eval-chart-section">
+        <div class="eval-chart-label">Evaluation over game</div>
+        <canvas id="eval-chart"></canvas>
+      </div>
+      <div class="status-bar">
+        <div class="status-dot idle" id="status-dot"></div>
+        <span id="status-text">Ready</span>
+        <div class="progress-bar" style="flex:1">
+          <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ─── WEBLLM (ES Module - must be last) ─── -->
+<script type="module" src="js/webllm.js"></script>
+
+</body>
+</html>
