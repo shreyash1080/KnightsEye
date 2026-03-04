@@ -79,4 +79,4 @@ PRs welcome! Please open an issue first for major changes.
 
 ## 📄 License
 
-MIT — see [LICENSE](LICENSE). Third-party licenses noted therein.
+ See [LICENSE](LICENSE). Third-party licenses noted therein.
